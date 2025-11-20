@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estrategia de Marca Personal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-main: #050507;
+      --bg-card: #111119;
+      --bg-soft: #181824;
+      --gold: #d4af37;
+      --gold-soft: #b3932d;
+      --text-main: #f5f5f5;
+      --text-soft: #b3b3c2;
+      --border-soft: #2a2a3a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle at top, #151524 0, #050507 55%);
+      color: var(--text-main);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      scroll-behavior: smooth;
+      overflow: hidden; /* controlado por JS */
+    }
+
+    /* CONTENEDOR GENERAL */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateX(40px) scale(0.98);
+      pointer-events: none;
+      transition:
+        opacity 0.45s ease,
+        transform 0.45s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .card {
+      width: min(1100px, 92vw);
+      height: min(640px, 82vh);
+      background: radial-gradient(circle at top left, #202031, #111119);
+      border-radius: 22px;
+      padding: 40px 48px;
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.75),
+        0 0 0 1px rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(212,175,55,0.16), transparent 55%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* CABECERAS */
+    .tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gold-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tag::before {
+      content: "";
+      width: 18px;
+      height: 1px;
+      background: var(--gold-soft);
+      opacity: 0.8;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", "Times New Roman", serif;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    h1 {
+      font-size: clamp(38px, 5vw, 52px);
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: clamp(26px, 3vw, 34px);
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .eyebrow {
+      font-size: 14px;
+      color: var(--text-soft);
+      margin-top: 6px;
+    }
+
+    .divider {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 22px 0 24px;
+    }
+
+    p, li {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    /* LAYOUTS */
+    .layout-2col {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      flex: 1;
+      align-items: center;
+    }
+
+    .layout-2col-reverse {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 40px;
+      flex: 1;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(250,250,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 12px;
+      color: var(--text-soft);
+      gap: 8px;
+    }
+
+    .chip i {
+      color: var(--gold-soft);
+      font-size: 13px;
+    }
+
+    ul.clean {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul.clean li {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    ul.clean li i {
+      margin-top: 4px;
+      color: var(--gold-soft);
+      font-size: 12px;
+    }
+
+    /* TARJETAS / PILARES */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .pillar {
+      background: rgba(10,10,18,0.9);
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.45);
+    }
+
+    .pillar-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 0, #ffe9a6, #8a6a13);
+      color: #181818;
+      margin-bottom: 10px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.7);
+    }
+
+    /* IMAGEN MOCK */
+    .photo-frame {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(0,0,0,0.5);
+      position: relative;
+      background: radial-gradient(circle at top, #31314d, #050507);
+      min-height: 260px;
+    }
+
+    .photo-tag {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      font-size: 11px;
+      color: #fafafa;
+      backdrop-filter: blur(10px);
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.92;
+      mix-blend-mode: screen;
+    }
+
+    /* SERVICIOS */
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      flex: 1;
+    }
+
+    .service-card {
+      background: var(--bg-soft);
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      padding: 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.75);
+    }
+
+    .service-index {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+    }
+
+    .service-tagline {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    /* PROCESO */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .step {
+      background: rgba(9,9,18,0.95);
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 14px 14px 16px;
+      position: relative;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid var(--gold-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    /* GRÁFICO SIMPLE */
+    .chart {
+      margin-top: 8px;
+      height: 220px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, #272742, #0b0b13);
+      border: 1px solid var(--border-soft);
+      padding: 18px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-grid {
+      position: absolute;
+      inset: 18px 22px;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(to top, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.55;
+    }
+
+    .chart-line {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-line svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-caption {
+      position: absolute;
+      left: 22px;
+      bottom: 16px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    /* TABLA PLANES */
+    table.pricing {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .pricing th,
+    .pricing td {
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .pricing th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .pricing tr + tr td {
+      border-top: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .pricing td:first-child {
+      color: var(--gold);
+      font-weight: 500;
+      font-family: "Playfair Display", serif;
+      font-size: 15px;
+    }
+
+    /* SLIDE FINAL */
+    .cta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      max-width: 520px;
+    }
+
+    .cta-line {
+      font-size: 17px;
+      color: var(--text-soft);
+    }
+
+    .cta-highlight {
+      font-size: 26px;
+      font-family: "Playfair Display", serif;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .contact-item {
+      font-size: 13px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-label {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .contact-value {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .avatar-ring {
+      position: absolute;
+      right: 40px;
+      bottom: 40px;
+      width: 110px;
+      height: 110px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #444466, #050507);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+    }
+
+    .avatar-ring img {
+      width: 96px;
+      height: 96px;
+      border-radius: 999px;
+      object-fit: cover;
+      opacity: 0.9;
+    }
+
+    /* NAV INFERIOR */
+    .nav {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dot.active {
+      width: 22px;
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .nav-hint {
+      opacity: 0.65;
+    }
+
+    .nav-hint i {
+      margin: 0 4px;
+      color: var(--gold-soft);
+    }
+
+    @media (max-width: 900px) {
+      .card {
+        padding: 28px 22px;
+      }
+      .layout-2col,
+      .layout-2col-reverse,
+      .services,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+      .avatar-ring {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: TÍTULO -->
+  <section class="slide active" data-index="0">
+    <div class="card">
+      <div class="tag">Branding Personal 2025</div>
+      <h1>Identidad & Visión</h1>
+      <p class="eyebrow">Estrategia de marca personal diseñada para comunicar autoridad, claridad y confianza.</p>
+      <div class="divider"></div>
+      <div style="margin-top:10px;">
+        <div class="chip">
+          <i class="fa-regular fa-gem"></i>
+          Posicionamiento estratégico · Estética premium · Coherencia en todos los puntos de contacto
+        </div>
+      </div>
+      <div style="margin-top:auto; font-size:13px; color:var(--text-soft); display:flex; justify-content:space-between; align-items:flex-end;">
+        <span>[Tu nombre aquí] · Estrategia & Dirección de Marca</span>
+        <span style="font-size:12px; color:rgba(255,255,255,0.55);">← → Navega con las flechas del teclado</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: LA CREADORA -->
+  <section class="slide" data-index="1">
+    <div class="card">
+      <div class="layout-2col">
+        <div>
+          <div class="tag">Perfil</div>
+          <h2>La creadora de la marca</h2>
+          <p class="eyebrow">Estrategia digital, diseño y narrativa visual enfocada en resultados.</p>
+          <div class="divider"></div>
+          <p><strong>Hola, soy [Nombre].</strong> Diseño marcas personales y proyectos creativos que quieren verse y sentirse como algo más que “otro perfil más” en redes.</p>
+          <p style="margin-top:10px;">Mi enfoque une claridad estratégica, estética minimalista y una experiencia visual coherente en cada punto de contacto: web, redes y materiales comerciales.</p>
+          <p style="margin-top:14px; font-style:italic; color:var(--gold-soft);">“El diseño es el embajador silencioso de tu marca.”</p>
+        </div>
+        <div>
+          <div class="photo-frame">
+            <div class="photo-tag">Retrato editorial · Branding</div>
+            <!-- Sustituye esta imagen por tu foto si quieres -->
+            <img src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Retrato profesional">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: PILARES -->
+  <section class="slide" data-index="2">
+    <div class="card">
+      <div class="tag">Fundamentos</div>
+      <h2>Pilares de la marca</h2>
+      <p class="eyebrow">Tres ejes que definen cómo se percibe y se recuerda tu presencia.</p>
+      <div class="divider"></div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon">
+            <i class="fa-regular fa-gem"></i>
+          </div>
+          <h3>Autenticidad</h3>
+          <p>Construir desde la verdad. La estética no tapa vacíos, los amplifica. La marca parte de tu historia real y de lo que puedes sostener en el tiempo.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <h3>Estrategia</h3>
+          <p>Cada color, tipografía y formato responde a un porqué: posicionamiento, segmentación y objetivos claros en lugar de improvisación visual.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <h3>Estética</h3>
+          <p>La forma en la que se ve tu marca condiciona la forma en la que te valoran. Un diseño limpio y sofisticado eleva el precio percibido automáticamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: IDENTIDAD VISUAL -->
+  <section class="slide" data-index="3">
+    <div class="card">
+      <div class="layout-2col-reverse">
+        <div>
+          <div class="tag">Identidad visual</div>
+          <h2>Lenguaje visual de la marca</h2>
+          <p class="eyebrow">Un sistema visual coherente que soporta tu mensaje, no lo distrae.</p>
+          <div class="divider"></div>
+          <ul class="clean">
+            <li>
+              <i class="fa-solid fa-palette"></i>
+              <div>
+                <strong>Paleta cromática:</strong>
+                <p>Negros profundos, grises grafito y acentos dorados. Sensación de solidez, calma y sofisticación.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-solid fa-font"></i>
+              <div>
+                <strong>Tipografía:</strong>
+                <p>Playfair Display para titulares (toque editorial) y Inter para cuerpo de texto (claridad y legibilidad en digital).</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-solid fa-crop-simple"></i>
+              <div>
+                <strong>Dirección visual:</strong>
+                <p>Fotografía limpia, luz suave, fondos neutros y composiciones con mucho aire. Nada de ruido, solo intención.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="photo-frame" style="min-height:280px;">
+            <div class="photo-tag">Moodboard · Tono & estilo</div>
+            <img src="https://images.pexels.com/photos/3738080/pexels-photo-3738080.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Moodboard">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: SERVICIOS -->
+  <section class="slide" data-index="4">
+    <div class="card">
+      <div class="tag">Servicios</div>
+      <h2>Cómo se traduce en proyectos reales</h2>
+      <p class="eyebrow">Acompaño el proceso completo: de la idea difusa a un sistema de marca funcional.</p>
+      <div class="divider"></div>
+
+      <div class="services">
+        <div class="service-card">
+          <div class="service-index">01 · Branding Full</div>
+          <h3>Identidad completa</h3>
+          <p class="service-tagline">Bases sólidas para todo lo que viene después.</p>
+          <p>Diseño de logotipo principal y secundarios, paleta cromática, sistema tipográfico, usos correctos/incorrectos y guía condensada de marca.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-index">02 · Estrategia RRSS</div>
+          <h3>Presencia en redes</h3>
+          <p class="service-tagline">Coherencia visual y mensajes claros.</p>
+          <p>Arquitectura de contenido, templates editables para stories, posts y portadas, más un pequeño manual de tono y narrativa.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-index">03 · Diseño Web</div>
+          <h3>Escaparate digital</h3>
+          <p class="service-tagline">De perfil a experiencia.</p>
+          <p>Diseño de landing, portfolio o web personal centrada en claridad, conversión y coherencia con el resto del ecosistema visual.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: PROCESO -->
+  <section class="slide" data-index="5">
+    <div class="card">
+      <div class="tag">Proceso</div>
+      <h2>Cómo trabajamos la marca</h2>
+      <p class="eyebrow">Un método simple, pero estructurado, para no perderse por el camino.</p>
+      <div class="divider"></div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">01</div>
+          <h3>Descubrimiento</h3>
+          <p>Conversación estratégica para entender contexto, objetivos, límites y esencia de la marca personal.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">02</div>
+          <h3>Concepto</h3>
+          <p>Moodboards, referencias y primeras direcciones visuales. Aquí alineamos expectativas antes de diseñar.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">03</div>
+          <h3>Desarrollo</h3>
+          <p>Construcción de la identidad, ajustes finos, pruebas en mockups y aplicación a piezas clave.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">04</div>
+          <h3>Entrega</h3>
+          <p>Entrega de archivos finales organizados y guía de uso para que puedas aplicar la marca con autonomía.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: IMPACTO -->
+  <section class="slide" data-index="6">
+    <div class="card">
+      <div class="tag">Impacto</div>
+      <h2>Qué cambia cuando la marca está alineada</h2>
+      <p class="eyebrow">No es solo “verse mejor”. Es que todo se entienda mejor.</p>
+      <div class="divider"></div>
+
+      <div class="layout-2col">
+        <div>
+          <ul class="clean">
+            <li>
+              <i class="fa-regular fa-circle-check"></i>
+              <div>
+                <strong>Claridad de propuesta.</strong>
+                <p>La gente entiende rápido quién eres, qué haces y por qué eres diferente.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-regular fa-circle-check"></i>
+              <div>
+                <strong>Percepción de valor.</strong>
+                <p>La estética alineada con tu posicionamiento permite subir precios sin que chirríe.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-regular fa-circle-check"></i>
+              <div>
+                <strong>Confianza y recuerdo.</strong>
+                <p>Una identidad consistente hace que te recuerden y recomienden con más facilidad.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="chart">
+            <div class="chart-grid"></div>
+            <div class="chart-line">
+              <svg viewBox="0 0 100 50" preserveAspectRatio="none">
+                <polyline
+                  points="0,40 18,34 34,30 50,24 66,18 82,12 100,8"
+                  fill="none"
+                  stroke="url(#grad)"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <defs>
+                  <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#d4af37"/>
+                    <stop offset="100%" stop-color="#f5e7a1"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="chart-caption">Evolución de percepción y coherencia visual a lo largo del trabajo de marca.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: PAQUETES -->
+  <section class="slide" data-index="7">
+    <div class="card">
+      <div class="tag">Inversión</div>
+      <h2>Formas de trabajar juntas</h2>
+      <p class="eyebrow">Distintos niveles según el punto en el que esté tu marca.</p>
+      <div class="divider"></div>
+
+      <table class="pricing">
+        <thead>
+        <tr>
+          <th>Paquete</th>
+          <th>Enfoque</th>
+          <th>Incluye</th>
+          <th>Tiempo estimado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Esencial</td>
+          <td>Empezar con buena base.</td>
+          <td>Logo principal, paleta, tipografía y guía breve de usos.</td>
+          <td>2 semanas</td>
+        </tr>
+        <tr>
+          <td>Profesional</td>
+          <td>Dar el salto de imagen.</td>
+          <td>Identidad completa + plantillas RRSS + piezas clave (firma, portada, dossier ligero).</td>
+          <td>4 semanas</td>
+        </tr>
+        <tr>
+          <td>Premium</td>
+          <td>Construir un ecosistema.</td>
+          <td>Todo lo anterior + diseño web personal o portfolio + acompañamiento en implementación.</td>
+          <td>6–8 semanas</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: CIERRE -->
+  <section class="slide" data-index="8">
+    <div class="card">
+      <div class="tag">Siguiente paso</div>
+      <h2>Trabajemos tu marca con intención</h2>
+      <div class="divider"></div>
+
+      <div class="cta">
+        <p class="cta-highlight">La estética abre puertas, pero la estrategia decide a cuáles.</p>
+        <p class="cta-line">Si sientes que tu trabajo y tu presencia visual no están al mismo nivel, ahí es donde empezamos.</p>
+
+        <div class="contact-grid">
+          <div class="contact-item">
+            <span class="contact-label">Email</span>
+            <span class="contact-value">contacto@tubranding.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Web</span>
+            <span class="contact-value">www.tubranding.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Instagram</span>
+            <span class="contact-value">@tuusuario</span>
+          </div>
+        </div>
+
+        <p style="font-size:12px; color:var(--text-soft); margin-top:10px;">
+          Presentación en HTML · Navega con <strong>←</strong> y <strong>→</strong> · Ideal para compartir enlace o presentar en pantalla completa.
+        </p>
+      </div>
+
+      <div class="avatar-ring">
+        <!-- Cambia esta imagen por tu retrato si quieres -->
+        <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Avatar">
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- NAVEGACIÓN INFERIOR -->
+<div class="nav">
+  <div class="dots" id="dots"></div>
+  <div class="nav-hint">
+    <i class="fa-solid fa-arrow-left-long"></i>
+    <i class="fa-solid fa-arrow-right-long"></i> Usa el teclado
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = 0;
+
+  const dotsContainer = document.getElementById('dots');
+  slides.forEach((_, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (idx === 0 ? ' active' : '');
+    dot.dataset.index = idx;
+    dot.addEventListener('click', () => goTo(idx));
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = Array.from(document.querySelectorAll('.dot'));
+
+  function goTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      goTo(current - 1);
+    }
+  });
+</script>
+
+</body>
+</html>
